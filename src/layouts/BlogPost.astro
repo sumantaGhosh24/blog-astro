@@ -1,0 +1,56 @@
+---
+import FormattedDate from "@components/FormattedDate.astro";
+
+import Layout from "./Layout.astro";
+
+const {title, description, pubDate, heroImage, tags, category, author} =
+  Astro.props;
+---
+
+<Layout title={title} description={description}>
+  <img
+    width={720}
+    height={360}
+    src={heroImage}
+    alt="post"
+    class="w-full h-[300px] object-cover rounded-lg mb-5"
+  />
+  <div class="space-y-5">
+    <h4 class="text-4xl font-bold">{title}</h4>
+    <FormattedDate date={pubDate} />
+    <div class="mt-5 flex items-center flex-wrap gap-3">
+      {
+        tags.map((tag: string) => (
+          <a
+            href={`/tags/${tag}`}
+            class="text-sm uppercae bg-blue-500 text-white py-1 px-2 w-fit rounded-md"
+          >
+            #{tag}
+          </a>
+        ))
+      }
+      {
+        category.map((cat: string) => (
+          <a
+            href={`/categories/${cat}`}
+            class="text-sm uppercae bg-blue-500 text-white py-1 px-2 w-fit rounded-md"
+          >
+            #{cat}
+          </a>
+        ))
+      }
+    </div>
+    <div class="flex items-center gap-5 bg-gray-200 rounded-md p-5 w-1/2">
+      <img src={author.image} alt="author" class="h-16 w-16 rounded-full" />
+      <div>
+        <p class="text-xl font-bold">{author.name}</p>
+        <p
+          class="text-sm uppercase bg-blue-500 text-white py-1 px-2 w-fit rounded-md"
+        >
+          {author.occupation}
+        </p>
+      </div>
+    </div>
+    <slot />
+  </div>
+</Layout>

@@ -1,0 +1,27 @@
+---
+import Layout from "@layouts/Layout.astro";
+
+const allPosts = Object.values(
+  import.meta.glob("../../content/blog/*.md", {eager: true})
+);
+const categories = [
+  ...new Set(allPosts.map((post: any) => post.frontmatter.category).flat()),
+];
+---
+
+<Layout title="Categories" description="All categories">
+  <h1 class="text-4xl font-bold text-center mb-10">All Categories</h1>
+
+  <div class="flex items-center justify-between gap-5 flex-wrap">
+    {
+      categories.map((category) => (
+        <a
+          href={`/categories/${category}`}
+          class="bg-gray-200 w-1/4 p-5 rounded-md text-xl uppercase font-bold"
+        >
+          {category}
+        </a>
+      ))
+    }
+  </div>
+</Layout>

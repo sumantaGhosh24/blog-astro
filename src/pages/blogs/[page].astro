@@ -1,0 +1,66 @@
+---
+import {getCollection} from "astro:content";
+
+import Layout from "@layouts/Layout.astro";
+import FormattedDate from "@components/FormattedDate.astro";
+
+export async function getStaticPaths({paginate}:any) {
+  const allPosts = await getCollection("blog");
+
+  return paginate(allPosts, {pageSize: 5});
+}
+
+const {page} = Astro.props;
+---
+
+<Layout title="Blogs" description="Lorem ipsum dolor sit amet">
+  <h1 class="text-3xl font-bold mb-5">Blog Page {page.currentPage}</h1>
+
+  <ul class="flex flex-col gap-5 mb-5">
+    {
+      page.data.map((post: any) => (
+        <li class="w-full bg-gray-200 p-5 rounded-lg">
+          <a
+            href={`/blog/${post.id}/`}
+            class="flex items-start gap-5 flex-col md:flex-row"
+            data-astro-prefetch
+            data-astro-reload
+          >
+            <img
+              width={720}
+              height={360}
+              src={post.data.heroImage}
+              alt="post"
+              class="w-full md:w-1/2 h-[300px] object-cover rounded-lg"
+            />
+            <div class="space-y-5">
+              <h4 class="text-4xl font-bold">{post.data.title}</h4>
+              <FormattedDate date={post.data.pubDate} />
+              <div class="mt-5 flex items-center flex-wrap gap-3">
+                {post.data.tags.map((tag:string) => (
+                  <span class="text-sm uppercae bg-blue-500 text-white py-1 px-2 w-fit rounded-md">#{tag}</span>
+                ))}
+                {post.data.category.map((cat:string) => (
+                  <span class="text-sm uppercae bg-blue-500 text-white py-1 px-2 w-fit rounded-md">#{cat}</span>
+                ))}
+              </div>
+              <div class="flex items-center gap-5">
+                <img src={post.data.author.image} alt="author" class="h-16 w-16 rounded-full" />
+                <div>
+                  <p class="text-xl font-bold">{post.data.author.name}</p>
+                  <p class="text-sm uppercase bg-blue-500 text-white py-1 px-2 w-fit rounded-md">{post.data.author.occupation}</p>
+                </div>
+            </div>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+
+  <div class="flex items-center justify-end gap-5">
+    {page.url.first ? <a href={page.url.first} class="btn">First</a> : null}
+    {page.url.prev ? <a href={page.url.prev} class="btn">Previous</a> : null}
+    {page.url.next ? <a href={page.url.next} class="btn">Next</a> : null}
+    {page.url.last ? <a href={page.url.last} class="btn">Last</a> : null}
+  </div>
+</Layout>

@@ -1,0 +1,27 @@
+---
+import Layout from "@layouts/Layout.astro";
+
+const allPosts = Object.values(
+  import.meta.glob("../../content/blog/*.md", {eager: true})
+);
+const tags = [
+  ...new Set(allPosts.map((post: any) => post.frontmatter.tags).flat()),
+];
+---
+
+<Layout title="Tags" description="All tags">
+  <h1 class="text-4xl font-bold text-center mb-10">All Tags</h1>
+
+  <div class="flex items-center justify-between gap-5 flex-wrap">
+    {
+      tags.map((tag) => (
+        <a
+          href={`/tags/${tag}`}
+          class="bg-gray-200 w-1/4 p-5 rounded-md text-xl uppercase font-bold"
+        >
+          {tag}
+        </a>
+      ))
+    }
+  </div>
+</Layout>

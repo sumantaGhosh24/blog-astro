@@ -1,0 +1,71 @@
+---
+import {getCollection} from "astro:content";
+
+import FormattedDate from "@components/FormattedDate.astro";
+import Layout from "@layouts/Layout.astro";
+
+export async function getStaticPaths() {
+  const allPosts = await getCollection("blog");
+  const uniqueTags = [
+    ...new Set(allPosts.map((post) => post.data.tags).flat()),
+  ];
+
+  return uniqueTags.map((tag) => {
+    const filteredPosts = allPosts.filter((post) =>
+      post.data.tags.includes(tag)
+    );
+    return {
+      params: {tag},
+      props: {posts: filteredPosts},
+    };
+  });
+}
+
+const {tag} = Astro.params;
+const {posts} = Astro.props;
+---
+
+<Layout title={tag} description="Lorem ipsum dolor sit amet">
+  <h1 class="text-3xl font-bold mb-5">Blog tagged with {tag}</h1>
+
+  <ul class="flex flex-col gap-5 mb-5">
+    {
+      posts.map((post) => (
+      <li class="w-full bg-gray-200 p-5 rounded-lg">
+          <a
+            href={`/blog/${post.id}/`}
+            class="flex items-start gap-5 flex-col md:flex-row"
+            data-astro-prefetch
+            data-astro-reload
+          >
+            <img
+              width={720}
+              height={360}
+              src={post.data.heroImage}
+              alt="post"
+              class="w-full md:w-1/2 h-[300px] object-cover rounded-lg"
+            />
+            <div class="space-y-5">
+              <h4 class="text-4xl font-bold">{post.data.title}</h4>
+              <FormattedDate date={post.data.pubDate} />
+              <div class="mt-5 flex items-center flex-wrap gap-3">
+                {post.data.tags.map((tag:string) => (
+                  <span class="text-sm uppercae bg-blue-500 text-white py-1 px-2 w-fit rounded-md">#{tag}</span>
+                ))}
+                {post.data.category.map((cat:string) => (
+                  <span class="text-sm uppercae bg-blue-500 text-white py-1 px-2 w-fit rounded-md">#{cat}</span>
+                ))}
+              </div>
+              <div class="flex items-center gap-5">
+                <img src={post.data.author.image} alt="author" class="h-16 w-16 rounded-full" />
+                <div>
+                  <p class="text-xl font-bold">{post.data.author.name}</p>
+                  <p class="text-sm uppercase bg-blue-500 text-white py-1 px-2 w-fit rounded-md">{post.data.author.occupation}</p>
+                </div>
+            </div>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</Layout>
